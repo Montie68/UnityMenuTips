@@ -32,6 +32,9 @@ namespace IgnitionImmersive
         public GameObject menuTip;
         // the Text for the tooltip
         public string menuTipText = "Lorum ipsom";
+        // check to stay active while in the editor
+        public bool isEditing;
+
         #endregion
 
         #region Private
@@ -59,50 +62,57 @@ namespace IgnitionImmersive
             // look for either a TMP pro text or a UI text element.
             _menuTip = Instantiate(menuTip, thisTransform);
             _menuTip.transform.SetParent(thisTransform);
+            // get the conners of the menu tips based of the width and height of both the parent element and the MenuTip
             Vector2 pos = new Vector2();
             RectTransform tipRectTransform = (RectTransform)_menuTip.transform;
             pos = new Vector2(thisTransform.rect.width / 2 + tipRectTransform.rect.width / 2, thisTransform.rect.height / 2 + tipRectTransform.rect.height / 2);
-
+            // Set the pos
             SetSizeAndPosition(pos);
 
-            Text[] ui = _menuTip.GetComponentsInChildren<Text>();
-            TextMeshProUGUI[] tmp = _menuTip.GetComponentsInChildren<TextMeshProUGUI>();
-            if (tmp.Length > 0)
-            {
-                textType = TextType.tmp;
-                tmpText = tmp[0];
-                tmpText.text = menuTipText;
-            }
-            else if (ui.Length > 0)
-            {
-                textType = TextType.ui;
-                uiText = ui[0];
-                uiText.text = menuTipText;
-            }
-            else
-            {
-                Debug.LogError("No Text Element found on Menu Text prefab");
-            }
-
+            // hide unitl the pointer hovers over the Element
             _menuTip.SetActive(false);
+
+#if UNITY_EDITOR
+            if (isEditing)
+                _menuTip.SetActive(true);
+#endif
+
         }
         void Update()
         {
+            // for in editor editing
 #if UNITY_EDITOR
             Vector2 pos = new Vector2();
             RectTransform tipRectTransform = (RectTransform)_menuTip.transform;
             pos = new Vector2(thisTransform.rect.width / 2 + tipRectTransform.rect.width / 2, thisTransform.rect.height / 2 + tipRectTransform.rect.height / 2);
-
+            // update the position
             SetSizeAndPosition(pos);
+
+            // show hide the menu tip for editing.
+            if (isEditing && _menuTip.activeInHierarchy == false)
+                _menuTip.SetActive(true);
+            else if (!isEditing && _menuTip.activeInHierarchy == true)
+                _menuTip.SetActive(false);
+
 #endif
         }
         public void OnPointerExit(PointerEventData eventData)
         {
+            // disable if editing in the unity editor
+#if UNITY_EDITOR
+            if (isEditing)
+               return;
+#endif
             _menuTip.SetActive(false);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            // disable if editing in the unity editor
+#if UNITY_EDITOR
+            if (isEditing)
+                return;
+#endif
             _menuTip.SetActive(true);
         }
         #endregion
@@ -139,6 +149,29 @@ namespace IgnitionImmersive
             }
             // set the dialouge's size
             _menuTip.GetComponent<RectTransform>().sizeDelta = dialougeSize;
+
+            // Get the Text Component and set the message type that is used in the prefab
+            Text[] ui = _menuTip.GetComponentsInChildren<Text>();
+            TextMeshProUGUI[] tmp = _menuTip.GetComponentsInChildren<TextMeshProUGUI>();
+            // if a TextMeshProUGUI is found assign the menuTipText to the text field  
+            if (tmp.Length > 0)
+            {
+                textType = TextType.tmp;
+                tmpText = tmp[0];
+                tmpText.text = menuTipText;
+            }
+            // if a UI Text is found assign the menuTipText to the text field  
+            else if (ui.Length > 0)
+            {
+                textType = TextType.ui;
+                uiText = ui[0];
+                uiText.text = menuTipText;
+            }
+            // Log error is no text element is assigned.
+            else
+            {
+                Debug.LogError("No Text Element found on Menu Text prefab");
+            }
         }
 
         #endregion
