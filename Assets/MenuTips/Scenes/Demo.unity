@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialougeSize: {x: 250, y: 50}
-  menuTipPosition: 2
+  menuTipPosition: 5
   offset: {x: 0, y: 0}
   menuTip: {fileID: 5191057244208519603, guid: 149db06367843ee4bb223aa3f03337fb, type: 3}
   menuTipText: This is a Slider
@@ -676,7 +676,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
